@@ -1,0 +1,31 @@
+version: '3.8'
+
+services:
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        # Backend API URL - change this to match your backend service
+        # For Docker network: use service name (e.g., http://backend:8000)
+        # For host machine: use host.docker.internal (e.g., http://host.docker.internal:8000)
+        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://host.docker.internal:8000}
+    container_name: nextjs-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+    restart: unless-stopped
+    # Uncomment to connect to a backend service in the same Docker network
+    # depends_on:
+    #   - backend
+    networks:
+      - app-network
+    # Add extra host for Linux to access host machine
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+networks:
+  app-network:
+    driver: bridge
+
